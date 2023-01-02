@@ -8,8 +8,8 @@ const screenHeight = window.innerHeight
 
 // 玩家相关常量设置
 const PLAYER_IMG_SRC = 'images/happy-rabit-pure.png'
-const PLAYER_WIDTH = 160
-const PLAYER_HEIGHT = 160
+const PLAYER_WIDTH = 120
+const PLAYER_HEIGHT = 120
 
 const databus = new DataBus()
 

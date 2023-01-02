@@ -20,8 +20,6 @@ export default class Main {
     this.aniId = 0
 
     this.restart();
-    console.log('a', 'b');
-
   }
 
   restart() {
@@ -62,7 +60,7 @@ export default class Main {
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']
     })
-    
+
     wx.onShareAppMessage((result) => {
       console.log('result', result);
       return {
