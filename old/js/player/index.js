@@ -1,14 +1,15 @@
 import Sprite from '../base/sprite'
 import Bullet from './bullet'
 import DataBus from '../databus'
+import Music from '../runtime/music'
 
 const screenWidth = window.innerWidth
 const screenHeight = window.innerHeight
 
 // 玩家相关常量设置
-const PLAYER_IMG_SRC = 'images/hero.png'
-const PLAYER_WIDTH = 80
-const PLAYER_HEIGHT = 80
+const PLAYER_IMG_SRC = 'images/happy-rabit-pure.png'
+const PLAYER_WIDTH = 120
+const PLAYER_HEIGHT = 120
 
 const databus = new DataBus()
 
@@ -18,12 +19,13 @@ export default class Player extends Sprite {
 
     // 玩家默认处于屏幕底部居中位置
     this.x = screenWidth / 2 - this.width / 2
-    this.y = screenHeight - this.height - 30
+    this.y = screenHeight - this.height - 120
 
     // 用于在手指移动的时候标识手指是否已经在飞机上了
     this.touched = false
 
     this.bullets = []
+    this.music = new Music()
 
     // 初始化事件监听
     this.initEvent()
@@ -39,16 +41,16 @@ export default class Player extends Sprite {
   checkIsFingerOnAir(x, y) {
     const deviation = 30
 
-    return !!(x >= this.x - deviation
-              && y >= this.y - deviation
-              && x <= this.x + this.width + deviation
-              && y <= this.y + this.height + deviation)
+    return !!(x >= this.x - deviation &&
+      y >= this.y - deviation &&
+      x <= this.x + this.width + deviation &&
+      y <= this.y + this.height + deviation)
   }
 
   /**
    * 根据手指的位置设置飞机的位置
    * 保证手指处于飞机中间
-   * 同时限定飞机的活动范围限制在屏幕中
+   * 同时限定飞机的活动范围限制在屏幕下方 2/3 处
    */
   setAirPosAcrossFingerPosZ(x, y) {
     let disX = x - this.width / 2
@@ -80,8 +82,11 @@ export default class Player extends Sprite {
       //
       if (this.checkIsFingerOnAir(x, y)) {
         this.touched = true
+        databus.score += 1;
+        wx.setStorageSync('score', databus.score);
 
-        this.setAirPosAcrossFingerPosZ(x, y)
+        this.shoot()
+        this.music.playShoot()
       }
     }))
 
@@ -106,6 +111,21 @@ export default class Player extends Sprite {
    * 射击时机由外部决定
    */
   shoot() {
+    const bullet = databus.pool.getItemByClass('bullet', Bullet)
+
+    bullet.init(
+      this.x + this.width / 2 - bullet.width / 2,
+      this.y - 10,
+      10
+    )
+
+    databus.bullets.push(bullet)
+  }
+  /**
+  * 玩家射击操作
+  * 射击时机由外部决定
+  */
+  autoShoot() {
     const bullet = databus.pool.getItemByClass('bullet', Bullet)
 
     bullet.init(

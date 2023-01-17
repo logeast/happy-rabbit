@@ -4,10 +4,13 @@ import BackGround from './runtime/background'
 import GameInfo from './runtime/gameinfo'
 import Music from './runtime/music'
 import DataBus from './databus'
+import Dreamer from "./npc/dreamer";
 
 const ctx = canvas.getContext('2d')
 const databus = new DataBus()
 
+const screenWidth = window.innerWidth
+const screenHeight = window.innerHeight
 /**
  * 游戏主函数
  */
@@ -16,7 +19,7 @@ export default class Main {
     // 维护当前requestAnimationFrame的id
     this.aniId = 0
 
-    this.restart()
+    this.restart();
   }
 
   restart() {
@@ -29,6 +32,7 @@ export default class Main {
 
     this.bg = new BackGround(ctx)
     this.player = new Player(ctx)
+    this.dreamer = new Dreamer(ctx);
     this.gameinfo = new GameInfo()
     this.music = new Music()
 
@@ -42,6 +46,28 @@ export default class Main {
       this.bindLoop,
       canvas
     )
+    wx.createGameClubButton({
+      icon: 'light',
+      style: {
+        left: 10,
+        top: screenHeight / 2,
+        width: 40,
+        height: 40
+      }
+    })
+
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+
+    wx.onShareAppMessage((result) => {
+      console.log('result', result);
+      return {
+        title: "吉祥兔兔之真爱唤醒",
+        imageUrl: "",
+      }
+    })
   }
 
   /**
@@ -52,7 +78,7 @@ export default class Main {
     if (databus.frame % 30 === 0) {
       const enemy = databus.pool.getItemByClass('enemy', Enemy)
       enemy.init(6)
-      databus.enemys.push(enemy)
+      // databus.enemys.push(enemy)
     }
   }
 
@@ -97,9 +123,9 @@ export default class Main {
     const area = this.gameinfo.btnArea
 
     if (x >= area.startX
-        && x <= area.endX
-        && y >= area.startY
-        && y <= area.endY) this.restart()
+      && x <= area.endX
+      && y >= area.startY
+      && y <= area.endY) this.restart()
   }
 
   /**
@@ -117,7 +143,8 @@ export default class Main {
         item.drawToCanvas(ctx)
       })
 
-    this.player.drawToCanvas(ctx)
+    this.player.drawToCanvas(ctx);
+    this.dreamer.drawToCanvas(ctx);
 
     databus.animations.forEach((ani) => {
       if (ani.isPlaying) {
@@ -155,10 +182,10 @@ export default class Main {
 
     this.collisionDetection()
 
-    if (databus.frame % 20 === 0) {
-      this.player.shoot()
-      this.music.playShoot()
-    }
+    // if (databus.frame % 20 === 0) {
+    //   this.player.shoot()
+    //   this.music.playShoot()
+    // }
   }
 
   // 实现游戏帧循环

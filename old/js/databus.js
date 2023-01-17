@@ -18,7 +18,7 @@ export default class DataBus {
 
   reset() {
     this.frame = 0
-    this.score = 0
+    this.score = Number(wx.getStorageSync('score')) || 0
     this.bullets = []
     this.enemys = []
     this.animations = []
@@ -37,7 +37,7 @@ export default class DataBus {
     this.pool.recover('enemy', enemy)
   }
 
-  /**
+  /**   
    * 回收子弹，进入对象池
    * 此后不进入帧循环
    */

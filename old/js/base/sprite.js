@@ -28,6 +28,7 @@ export default class Sprite {
       this.width,
       this.height
     )
+
   }
 
   /**
